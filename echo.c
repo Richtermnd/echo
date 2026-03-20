@@ -7,24 +7,28 @@
 
 #define BUFFER_SIZE 1024
 
-
 void handle_connection(int peer_sock) {
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE] = {0};
+	char out[BUFFER_SIZE] = {0};
 	size_t n;
 	for (;;) {
 		n = recv(peer_sock, buffer, BUFFER_SIZE, 0);
-		printf("size: %zu\n", n);
-		printf("msg: %s\n", buffer);
 		if (n == 0) {
 			printf("[INFO] connection closed\n");
 			return;
 		}
+		buffer[n] = '\0';
+		printf("size: %zu\n", n);
+		printf("msg: %s\n", buffer);
+		strcpy(out, "[echo] ");
+		strcat(out, buffer);
+		send(peer_sock, out, strlen(out), 0);
 	}
 }
 
 int main() {
 	// create socket
-    int s = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    int s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s < 0) {
 		fprintf(stderr, "failed to create socket: %s\n", strerror(errno));
 		return 1;
