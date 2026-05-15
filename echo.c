@@ -7,6 +7,9 @@
 
 #define BUFFER_SIZE 1024
 
+#define ADDR_fmt "%zu.%zu.%zu.%zu:%zu"
+#define ADDR_arg(addr) ((addr).sin_addr.s_addr >> 0) & 0xff, ((addr).sin_addr.s_addr >> 8) & 0xff, ((addr).sin_addr.s_addr >> 16) & 0xff, ((addr).sin_addr.s_addr >> 24) & 0xff, (addr).sin_port
+
 void handle_connection(int peer_sock) {
 	char buffer[BUFFER_SIZE] = {0};
 	char out[BUFFER_SIZE] = {0};
@@ -56,7 +59,7 @@ int main() {
 	int peer_sock;
 	for (;;) {
 		peer_sock = accept(s, (struct sockaddr *)(&peer_addr), &peer_addr_size); 
-		printf("[INFO] connection accepted\n");
+		printf("[INFO] connection accepted "ADDR_fmt"\n", ADDR_arg(peer_addr));
 		handle_connection(peer_sock);
 	}
 	close(s);
